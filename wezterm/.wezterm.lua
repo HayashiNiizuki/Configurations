@@ -11,8 +11,8 @@ local config = wezterm.config_builder()
 -- config.initial_rows = 28
 
 -- or, changing the font size and color scheme
-config.font = wezterm.font 'Monego'
-config.font_size = 12
+config.font = wezterm.font_with_fallback {'Monego', 'Noto Sans CJK SC'}
+config.font_size = 11
 
 -- if not can't start
 config.enable_wayland = false
@@ -26,9 +26,9 @@ config.color_scheme = 'One Half Black (Gogh)'
 -- fullscreen on startup
 local mux = wezterm.mux
 wezterm.on('gui-startup', function(window)
-  local tab, pane, window = mux.spawn_window(cmd or {})
-  local gui_window = window:gui_window();
-  gui_window:perform_action(wezterm.action.ToggleFullScreen, pane)
+    local tab, pane, window = mux.spawn_window(cmd or {})
+    local gui_window = window:gui_window();
+    gui_window:perform_action(wezterm.action.ToggleFullScreen, pane)
 end)
 
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
@@ -66,6 +66,12 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
         Text = ' ' .. index .. ': ' .. title .. ' '
     }}
 end)
+
+config.keys = {{
+    key = 'Backspace',
+    mods = 'CTRL',
+    action = wezterm.action.SendString '\x17' -- Ctrl+W
+}}
 
 -- Finally, return the configuration to wezterm:
 return config
